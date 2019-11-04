@@ -76,7 +76,7 @@ Main:
 	
 MainStart:
 	LOAD    Theta			; Read current angle from odometry
-	ADDI    45				; Increment angle
+	ADD     TurnAngle		; Increment angle (default 45)
 	STORE   DTheta			; Set new angle in DTheta
 	OUT     SSEG1			; Display DTheta on SSEG1
 
@@ -107,6 +107,23 @@ RegularTurn:				; Regular logic for regular turns
 	
 InfLoop:
 	JUMP    InfLoop         ; Jump indefinitely
+	
+
+	
+	
+; Memory location to store wait instrtuction
+WaitTime: DW 0
+
+; Memory location for angle to turn (default 45 degrees ccwise)
+TurnAngle: DW 45
+; Function waits for the number of ticks stored in WaitTime before returning to main function.
+Wait:
+	OUT    Timer
+WaitLoop:
+	IN     Timer			; Read timer value
+	SUB    WaitTime
+	JPOS   WaitLoop			; If time is still left to wait, keep looping
+	RETURN
 	
 	
 
@@ -710,7 +727,7 @@ Mask4:    DW &B00010000
 Mask5:    DW &B00100000
 Mask6:    DW &B01000000
 Mask7:    DW &B10000000
-LowByte:  DW &HFF      ; binary 00000000 1111111
+LowByte:  DW &HFF      ; binary 00000000 11111111
 LowNibl:  DW &HF       ; 0000 0000 0000 1111
 
 ; some useful movement values
