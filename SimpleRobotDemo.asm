@@ -74,21 +74,41 @@ Main:
 	; If you want to take manual control of the robot,
 	; execute CLI &B0010 to disable the timer interrupt.
 	
-ScanMain: ; Scan should turn a full 90 degrees from robots heading, looking for minimum distance. Robot should hold the value for the angle of that distance
+MainStart:
+	LOAD    Theta			; Read current angle from odometry
+	ADDI    45				; Increment angle
+	STORE   DTheta			; Set new angle in DTheta
+	OUT     SSEG1			; Display DTheta on SSEG1
 
-	LOAD Theta
-	ADDI 20
-	STORE TempVal
-	STORE DTheta		
-Loop1:	
-	LOAD Theta
-	OUT LCD
-	SUB TempVal
-	ADDI -3
-	CALL Abs
-	JPOS Loop1
+TurnLoop:	
+	LOAD    DTheta			; Load ideal value of angle
+	ADDI    -180			
+	JPOS    RegularTurn		; If (DTheta > 180), turn uses regular logic
+	IN      Theta			; Read angle from odometry
+	ADDI    -180
+	JNEG    RegularTurn		; If (Theta < 180), turn uses regular logic
+SpecialTurn:				; Otherwise, DTheta is < 180 and Theta > 180, use special logic to turn
+							; Special turn checks if Abs(Theta-360 - Theta) - 3 < 0
+	IN      Theta			; Read angle from odometry
+	OUT     SSEG2			; Display Theta on SSEG2
+	ADDI    -360			
+	SUB     DTheta
+	CALL    Abs				; Find Abs(Theta-360 - DTheta)
+	ADDI    -3
+	JPOS    TurnLoop		; If error is greater than 3, continue turning
+RegularTurn:				; Regular logic for regular turns
+	IN 		Theta			; Read odometry angle
+	OUT     SSEG2			; Display Theta on SSEG2
+	SUB     DTheta			
+	CALL    Abs				; Find Abs(Theta - DTheta)
+	ADDI    -3			
+	JPOS    TurnLoop		; If error is greater than 3, continue turning
 	
-	Jump ScanMain
+	
+InfLoop:
+	JUMP    InfLoop         ; Jump indefinitely
+	
+	
 
 	
 	
