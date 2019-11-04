@@ -76,9 +76,18 @@ Main:
 	
 ScanMain: ; Scan should turn a full 90 degrees from robots heading, looking for minimum distance. Robot should hold the value for the angle of that distance
 
-	LOAD Theta			; Turns to -45 degrees (+ 12 more for sonar to face forward)
-	ADDI 8
-	STORE DTheta		; turn robot 45 degrees left (assumes facing down x axis when done with last step)
+	LOAD Theta
+	ADDI 20
+	STORE TempVal
+	STORE DTheta		
+Loop1:	
+	LOAD Theta
+	OUT LCD
+	SUB TempVal
+	ADDI -3
+	CALL Abs
+	JPOS Loop1
+	
 	Jump ScanMain
 
 	
@@ -705,6 +714,8 @@ MinBatt:  DW 140       ; 14.0V - minimum safe battery voltage
 I2CWCmd:  DW &H1190    ; write one i2c byte, read one byte, addr 0x90
 I2CRCmd:  DW &H0190    ; write nothing, read one byte, addr 0x90
 
+
+TempVal: DW 0
 DataArray:
 	DW 0
 ;***************************************************************
