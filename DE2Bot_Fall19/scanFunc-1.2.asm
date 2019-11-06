@@ -167,12 +167,61 @@ Move:
 	IN Timer			; Otherwise read timer value
 	ADDI -20
 	JPOS ScanMain		; If 20 ticks have passed, restart scan process to realign to cloest object
-	JUMP Move			; If not, keep checking sonars and timer.
+	JUMP Move			; If not, keep checking sonars and timer. (also keeps from falling below into helper functions)
 	
 	
 	; Circle should make a square route around the reflector, ending on the far side of it, ready to scan again
 CircleStart:
+    LOAD    ZERO
+    STORE   DTheta
+    ; Should now wait for robot to turn to 0
+    
+; DTheta is defined before this function call    
+TurnFunc:
+CheckA:
+    ; Check for condition A
+    LOAD    DTheta
+    ADDI    -270
+    JNEG    CheckB
+    IN      Theta
+    ADDI    -180
+    JPOS    CheckB
+    IN      Theta
+    SUB     DTheta
+    ADDI    180
+    JPOS    CheckB
+InitA:
+    IN      Theta
+    ADDI    360
+    JUMP    TurnCheck
+    
+CheckB:
+    LOAD    DTheta
+    ADDI    -90
+    JPOS    InitC
+    IN      Theta
+    ADDI    -180
+    JNEG    InitC
+    IN      Theta
+    SUB     DTheta
+    ADDI    -180
+    JNEG    InitC
+InitB:
+    IN      Theta
+    ADDI    -360
+    JUMP    TurnCheck
 
+InitC:
+    IN      Theta
+
+TurnCheck:
+    CALL    Abs
+    ADDI    -3
+    JPOS    CheckA
+    RETURN
+    
+    
+    
 	
 
 	; Infinite loop to end execution. Stop movement and keep looping.
