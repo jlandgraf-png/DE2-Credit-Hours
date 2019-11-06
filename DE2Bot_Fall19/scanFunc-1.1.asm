@@ -94,7 +94,7 @@ Scan1:
 	LOADI &HA
 	OUT LCD
 	IN Theta
-	ADDI -57	
+	ADDI -54	
 	CALL Abs
 	ADDI -3
 	JPOS Scan1
@@ -135,30 +135,67 @@ ScanEnd:
 	;ADDI -12				; Subtract 12 degrees (for offset of sonar from front)
 	STORE DTheta
 	LOAD MinDist
-	ADDI -750
-	JNEG InfLoop
-	LOAD 200
+	ADDI -450
+	JNEG TurnPerp
+	LOAD FMid
 	STORE DVel
 	OUT Timer
 	LOAD MASK3
 	OR	MASK2
 	OUT SONAREN
-Move:
+MoveToThing:
 	IN DIST3
-	ADDI -1000
-	JNEG InfLoop
+	ADDI -450
+	JNEG TurnPerp
 	IN DIST2
-	ADDI -1000
-	JNEG InfLoop
+	ADDI -450
+	JNEG TurnPerp
 	IN Timer
 	ADDI -20
 	JPOS ScanMain
-	JUMP Move
-
+	JUMP MoveToThing
 	
-InfLoop:
-	LOAD ZERO
+
+TurnPerp:
+	LOAD Mask0
+	OUT SONAREN
+	LOADI -60
+	STORE DTheta
+	
+CheckPerp:
+	IN DIST0
+	ADDI -460
+	JPOS CheckPerp
+	IN Theta
+	STORE DTheta
+	LOADI 400
 	STORE DVel
+
+LoopSide:
+	IN Theta
+	ADDI 10
+	STORE DTheta
+	IN DIST0
+	ADDI -475
+	JPOS MoveIn
+	IN DIST0
+	ADDI -425
+	JNEG MoveOut
+	JUMP LoopSide
+	
+MoveIn:
+	IN Theta
+	ADDI 17
+	STORE DTheta
+	JUMP LoopSide
+	
+MoveOut:
+	IN Theta
+	ADDI -9
+	STORE DTheta
+	JUMP LoopSide	
+
+InfLoop:
 	JUMP InfLoop
 	
 
@@ -790,6 +827,7 @@ I2CRCmd:  DW &H0190    ; write nothing, read one byte, addr 0x90
 ; Values used for Scanning
 MinDist: DW &HFFFF
 MinAngle: DW 0
+
 
 DataArray:
 	DW 0
