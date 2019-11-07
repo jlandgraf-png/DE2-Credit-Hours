@@ -69,7 +69,7 @@ BEGIN
 		wrcontrol_aclr_a => "NONE",
 		address_aclr_a   => "NONE",
 		outdata_aclr_a   => "NONE",
-		init_file        => "SimpleScanDemo.mif",
+		init_file        => "scanFunc-1.2.mif",
 		lpm_hint         => "ENABLE_RUNTIME_MOD=NO",
 		lpm_type         => "altsyncram"
 	)

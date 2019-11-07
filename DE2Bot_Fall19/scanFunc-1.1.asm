@@ -79,7 +79,7 @@ Main:
 	
 	
 	; Scan() assumes facing 0 degrees (+x axis)
-	; Scan() scans from -45 to 45 degrees
+	; Scan() scans from -60 to 60 degrees
 	; Scan keeps minimum read sonar value and its odometry angle
 	; Scan turns to saved angle after scanning
 ScanMain: ; Scan should turn a full 90 degrees from robots heading, looking for minimum distance. Robot should hold the value for the angle of that distance
@@ -201,7 +201,16 @@ InfLoop:
 
 
 	
-
+TurnFunc:
+	IN      Theta
+	SUB     DTheta
+	CALL    GetThetaErr
+	CALL    Abs
+	ADDI    -3
+	JPOS    TurnFunc
+	RETURN
+	
+	
 Die:
 ; Sometimes it's useful to permanently stop execution.
 ; This will also catch the execution if it accidentally
