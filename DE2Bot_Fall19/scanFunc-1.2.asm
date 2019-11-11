@@ -76,7 +76,7 @@ Main:
     
 
     
-    
+    JUMP TurnPerp ; delete when  testing entire project
 
 ; Scan() pings sonar 3 from -60 to 60 degrees
 ; Scan keeps minimum read sonar value and its odometry angle
@@ -155,7 +155,8 @@ MoveToThing:
 TurnPerp:
 
     LOAD Mask0
-    OUT SONAREN         ; Enable sonar 0 (sonar on left panel)
+    OR   Mask5
+    OUT SONAREN         ; Enable sonars 0 and 5 (left and right sensors)
     LOADI -60
     STORE DTheta        ; Turn to face 60 degrees right
     
