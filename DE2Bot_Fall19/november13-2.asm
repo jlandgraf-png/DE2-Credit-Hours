@@ -212,6 +212,9 @@ EndLoopTurn:
 	LOADI 0
 	STORE DTheta
 	STORE DVel
+	;LOAD Counter		; Moved counter++ from here.
+    	;ADDI 1
+    	;STORE Counter
 	CALL TurnFunc
 	JUMP ScanMain
 LoopSideContinue1:
@@ -226,7 +229,7 @@ LoopSideContinue1:
 	JPOS LoopSideContinue2
     LOADI 1
     STORE TurnFlag
-    LOAD Counter
+    LOAD Counter		; Moved counter++ to here
     ADDI 1
     STORE Counter
     
