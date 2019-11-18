@@ -76,7 +76,8 @@ Main:
 	
 
 	
-	
+	LOADI 1
+	STORE Counter
 	
 	; Scan() assumes facing 0 degrees (+x axis)
 	; Scan() scans from -60 to 60 degrees
@@ -87,6 +88,9 @@ ScanMain: ; Scan should turn a full 90 degrees from robots heading, looking for 
 	STORE DVel
 	LOADI -1
 	STORE TurnFlag
+	OUT SSEG2
+	LOAD Counter
+	OUT SSEG1
 	LOADI &HFFFF
 	STORE MinDist
 
@@ -110,19 +114,19 @@ ScanLoop:
 	LOADI &HB
 	OUT LCD
 	IN DIST3			; Read sonar 3
-	OUT SSEG1		; Display on seven segment
+			; Display on seven segment
 	SUB MinDist
 	JPOS ScanTurn		; If MinDist is less than sonar input, continue turning and don't overwrite
 	LOADI &HC
-	OUT LCD
+	
 	IN DIST3
 	STORE MinDist		; Store new minimum distance
-	OUT SSEG2
+	
 	IN Theta
 	STORE MinAngle		; Store new angle associated with minimum distance
 ScanTurn:
 	LOADI &HF
-	OUT LCD
+	
 	IN Theta
 	ADDI -320
 	CALL   Neg         ; desired - actual angle
@@ -136,7 +140,7 @@ ScanTurn:
 	
 ScanEnd:
 	LOADI &HD
-	OUT LCD
+	
 	LOAD MinAngle
 	;ADDI -12				; Subtract 12 degrees (for offset of sonar from front)
 	STORE DTheta
@@ -180,7 +184,7 @@ TurnPerp:
     
 CheckPerp:
 	IN Theta
-	OUT SSEG1
+	
 	ADDI -30
 	STORE DTheta
 	CALL TurnFunc
@@ -195,6 +199,7 @@ CheckPerp:
     
 LoopSide:
 	LOAD Counter
+	OUT SSEG1
 	ADDI -2
 	JPOS LoopSideContinue2
 	LOAD TurnFlag
@@ -212,9 +217,9 @@ EndLoopTurn:
 	LOADI 0
 	STORE DTheta
 	STORE DVel
-	;LOAD Counter		; Moved counter++ from here.
-    	;ADDI 1
-    	;STORE Counter
+	LOAD Counter		; Moved counter++ from here.
+    ADDI 1
+    STORE Counter
 	CALL TurnFunc
 	JUMP ScanMain
 LoopSideContinue1:
@@ -229,9 +234,7 @@ LoopSideContinue1:
 	JPOS LoopSideContinue2
     LOADI 1
     STORE TurnFlag
-    LOAD Counter		; Moved counter++ to here
-    ADDI 1
-    STORE Counter
+    OUT SSEG2
     
 LoopSideContinue2:
 	IN Theta
@@ -951,8 +954,8 @@ MinDist: DW &HFFFF
 MinAngle: DW 0
 StartingAngle: DW 0
 TurnAmt: DW 10
-TurnFlag: DW 0
-Counter: DW 0
+TurnFlag: DW -1
+Counter: DW 1
 
 
 DataArray:
